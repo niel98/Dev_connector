@@ -7,6 +7,7 @@ const { check, validationResult } = require('express-validator')
 
 const Profile = require('../../models/Profile')
 const User = require('../../models/User')
+const Post = require('../../models/Post')
 
 //@route    GET api/profile/me
 //@desc     Get current user profile
@@ -61,11 +62,10 @@ router.post(
 
             if (company) profileFields.company = company
             if (status) profileFields.status = status
-            if (website) profileFields.company = website
-            if (location) profileFields.company = location
-            if (bio) profileFields.company = bio
-            if (status) profileFields.company = status
-            if (githubusername) profileFields.company = githubusername
+            if (website) profileFields.website = website
+            if (location) profileFields.location = location
+            if (bio) profileFields.bio = bio
+            if (githubusername) profileFields.githubusername = githubusername
             if (skills) {
                 profileFields.skills = skills.split(',').map(skill => skill.trim())
             }
@@ -140,7 +140,8 @@ router.get('/user/:user_id', async (req, res) => {
 //access    Private
 router.delete('/', auth, async (req, res) => {
     try {
-        //@todo - remove user posts
+        //Remove user Posts
+        await Post.deleteMany({ user: req.user.id })
 
         //Remove Profile
         await Profile.findOneAndRemove({ user: req.user.id })
